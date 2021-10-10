@@ -1,51 +1,89 @@
+<script setup lang="ts">
+import ChatMessage from './ChatMessage.vue'
+import { onMounted, reactive } from 'vue'
+
+/* props and variables */
+let toggle = false;
+let message:string = "";
+
+/* methods */
+function getDateTimeNow() {
+  const timeElapsed = Date.now();
+  const today = new Date(timeElapsed);
+  return today.toUTCString(); // "Sat, 13 Jun 2020 18:30:00 GMT" 
+}
+
+function updateMessage(value:string) { 
+  //let message = document.getElementById('messageBox')?.value.trim();
+  message = value.replace(/\r?\n/g, '<br/>');
+  //document.getElementById('messageBox').value = "";
+}
+
+function autoScrollChatPanel() {
+  let chat = document.getElementById('chatPanel');
+  chat?.scrollTo(0,chat.offsetHeight);
+}
+
+let messages= reactive([{
+  id:1,
+  isLeftAligned:true,
+  username:"John Doe",
+  avatar:"https://images.unsplash.com/photo-1542513217-0b0eedf7005d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxhbGx8fHx8fHx8fHwxNjE5MDEzMDcx&ixlib=rb-1.2.1&q=80&w=1080&utm_source=unsplash_source&utm_medium=referral&utm_campaign=api-credit",
+  message:"Are we still going out on the weekend?<br/>I need to confirm the booking with the restaurant.",
+  timestamp:getDateTimeNow()
+}]);
+
+onMounted(() => {
+  document.getElementById('messageBox')?.addEventListener(
+    "keypress", function(e) {
+      if (e.keyCode == 13 && !e.shiftKey)
+      {
+        // prevent default behavior
+        e.preventDefault();
+
+        // update UI view
+        messages.push({
+          id:Math.round(Math.random()*100),
+          isLeftAligned:false,
+          username:"John Doe",
+          avatar:"https://images.unsplash.com/photo-1542513217-0b0eedf7005d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxhbGx8fHx8fHx8fHwxNjE5MDEzMDcx&ixlib=rb-1.2.1&q=80&w=1080&utm_source=unsplash_source&utm_medium=referral&utm_campaign=api-credit",
+          message:message,
+          timestamp:getDateTimeNow()
+        });
+        
+        // emit a socket.io event
+        socket.emit('chat message', message);
+
+        // cleanup the UI inputs
+        message = "";
+        toggle = !toggle;
+        autoScrollChatPanel();
+
+      }
+      else return true;
+    }
+  );
+})
+
+socket.on('chat message', function(message) {
+  messages.push({
+    id:Math.round(Math.random()*100),
+    isLeftAligned:true,
+    username:"John Doe",
+    avatar:"https://images.unsplash.com/photo-1542513217-0b0eedf7005d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxhbGx8fHx8fHx8fHwxNjE5MDEzMDcx&ixlib=rb-1.2.1&q=80&w=1080&utm_source=unsplash_source&utm_medium=referral&utm_campaign=api-credit",
+    message:message,
+    timestamp:getDateTimeNow()
+  });
+});
+
+
+
+</script>
+
 <template>
   <div class="flex">
-    <!-- Sidebar -->
-    <div class="w-16 h-screen flex flex-col items-center justify-between bg-gray-50 border-r border-solid border-gray-200">
-      <img class="w-12 pt-3" alt="GRAHSLAGG LOGO" src="../assets/w_logo.png"/>
-      
-      <!-- Navigation -->
-      <div class="flex flex-col justify-between h-32">
-        <!-- Postings -->
-        <div class="relative flex flex-col justify-center items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 stroke-current text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-        </svg>
-          <span class="hidden mt-10 w-1 h-1 bg-indigo-700 rounded-full absolute"></span>
-        </div>
-
-        <!-- Chat -->
-        <div class="relative flex flex-col justify-center items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 stroke-current text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-          </svg>
-          <span class="mt-8 w-1 h-1 bg-indigo-700 rounded-full absolute"></span>
-        </div>
-        
-        <!-- Contacts -->
-        <div class="relative flex flex-col justify-center items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 stroke-current text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-          <span class="hidden mt-10 w-1 h-1 bg-indigo-700 rounded-full absolute"></span>
-        </div>
-
-        
-
-      </div>
-
-      <!-- Settings Icon -->
-      <div class="mb-16">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 stroke-current text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      </div>
-
-    </div>
-
     <!-- Contact List -->
-    <div class="w-72 h-screen bg-gray-100 px-2 py-2 border-r border-solid">
+    <div class="hidden md:block w-72 h-screen bg-gray-100 px-2 py-2 border-r border-solid">
       <div class="flex justify-between items-center bg-gray-50 -mx-2 -my-2 py-2 px-2">
         <img class="w-10 h-10 rounded-full" src="../assets/user.jpg" alt="Profile Image" >
 
@@ -125,7 +163,7 @@
     </div>   
 
     <!-- Main Pane -->
-    <div class="flex-grow flex flex-col h-screen justify-between bg-pink-100">
+    <div class="w-screen flex-grow flex flex-col h-screen justify-between bg-pink-100">
       <!-- Top Panel -->
       <div class="flex justify-between items-center bg-gray-50 py-2 px-6">
         <div class="flex">
@@ -156,36 +194,20 @@
       </div>
 
       <!-- messages -->
-      <div class="flex-grow py-2 px-6">
+      <div class="flex-grow pt-2 px-6 overflow-y-auto pb-32" id="chatPanel">
+        <ChatMessage 
+          v-for="entry in messages" :key="entry.id"
+          :isLeftAligned="entry.isLeftAligned"
+          :username="entry.username"
+          :avatar-url="entry.avatar" 
+          :message="entry.message"
+          :timestamp="entry.timestamp"
+        />
 
-        <div class="flex items-end w-max m-2">
-           <img class="w-8 h-8 mb-1 rounded-full" src="https://images.unsplash.com/photo-1542513217-0b0eedf7005d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxhbGx8fHx8fHx8fHwxNjE5MDEzMDcx&ixlib=rb-1.2.1&q=80&w=1080&utm_source=unsplash_source&utm_medium=referral&utm_campaign=api-credit" alt="Active Chat User" />
-          <div class="rounded-t-xl rounded-r-xl bg-gray-50 py-3 px-4 ml-2 shadow-md">
-            <p>
-              Are we still going out on the weekend? <br/>
-              I need to confirm the booking with the restaurant.
-            </p>
-          </div>
-        </div>
-        
-        <div class="flex justify-end">
-          <div class="flex items-end w-max m-2 place-content-end">
-            <div class="rounded-t-xl rounded-l-xl bg-green-100 py-3 px-4 mr-2 shadow-md">
-              <p>
-                Are we still going out on the weekend? <br/>
-                I need to confirm the booking with the restaurant.
-              </p>
-            </div>
-            <img class="w-8 h-8 mb-1 rounded-full" src="https://images.unsplash.com/photo-1542513217-0b0eedf7005d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxhbGx8fHx8fHx8fHwxNjE5MDEzMDcx&ixlib=rb-1.2.1&q=80&w=1080&utm_source=unsplash_source&utm_medium=referral&utm_campaign=api-credit" alt="Active Chat User" />
-          </div>
-        </div>
-       
-
-        
-      </div>
+      </div> <!-- end -->
 
       <!-- bottom input -->
-      <div class="flex h-20 justify-between items-center bg-gray-100 py-2 px-6 inset-x-0 bottom-0">
+      <div class="flex justify-between items-center bg-gray-200 py-2 px-6 inset-x-0 bottom-0 ">
         <div class="flex w-16 justify-between mx-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -196,7 +218,7 @@
           </svg>
         </div>
 
-        <input type="text" name="messageBox" id="messageBox" placeholder="Type your message" class="flex-grow focus:outline-none py-2 px-4 rounded-full bo">
+        <textarea :value="message" @input="updateMessage($event.target.value)" type="text" name="messageBox" id="messageBox" placeholder="Type your message" class="h-12 flex-grow focus:outline-none my-1 py-2 px-4 rounded-2xl place-content-center resize-none scrollbar-w-2 scrollbar-thumb-gray-400 scrollbar-track-gray-200"></textarea>
         
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
@@ -210,14 +232,7 @@
   </div>
 </template>
 
-<style scoped lang="postcss">
+<style scoped>
 
 </style>
 
-<script setup lang="ts">
-import { ref } from 'vue'
-
-// defineProps<{ msg: string }>()
-
-const count = ref(0)
-</script>

@@ -7,6 +7,17 @@
     <title>Vite App</title>
   </head>
   <body class="w-full h-screen">
+    <script src="/src/lib/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io("http://localhost:8080", {
+        transports: ["websocket", "polling"],
+        withCredentials: false,
+        extraHeaders: {
+          "Access-Control-Allow-Origin": "*"
+        }
+      });
+    </script>
+
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

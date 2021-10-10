@@ -1,0 +1,21 @@
+        <ChatMessage 
+          isLeftAligned
+          username="John Doe"
+          avatar-url="https://images.unsplash.com/photo-1542513217-0b0eedf7005d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxhbGx8fHx8fHx8fHwxNjE5MDEzMDcx&ixlib=rb-1.2.1&q=80&w=1080&utm_source=unsplash_source&utm_medium=referral&utm_campaign=api-credit" 
+          message="Are we still going out on the weekend?\nI need to confirm the booking with the restaurant."
+        />
+        
+        <ChatMessage 
+          username="John Doe"
+          avatar-url="https://images.unsplash.com/photo-1542513217-0b0eedf7005d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxhbGx8fHx8fHx8fHwxNjE5MDEzMDcx&ixlib=rb-1.2.1&q=80&w=1080&utm_source=unsplash_source&utm_medium=referral&utm_campaign=api-credit" 
+          message="Are we still going out on the weekend?\nI need to confirm the booking with the restaurant."
+        />
+
+        <ChatMessage 
+          username="John Doe"
+          avatar-url="https://images.unsplash.com/photo-1542513217-0b0eedf7005d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxhbGx8fHx8fHx8fHwxNjE5MDEzMDcx&ixlib=rb-1.2.1&q=80&w=1080&utm_source=unsplash_source&utm_medium=referral&utm_campaign=api-credit" 
+          message="Hey dude! \n call me when you get there."
+        />
+
+
+        :value="message" @input="message = $event.target.value"
