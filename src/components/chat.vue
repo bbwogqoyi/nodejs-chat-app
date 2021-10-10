@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import ChatMessage from './ChatMessage.vue'
+import io from 'socket.io-client';
 import { onMounted, reactive } from 'vue'
+
+var socket = io("http://localhost:8080", {
+  transports: ["websocket", "polling"],
+  withCredentials: false,
+  extraHeaders: {
+    "Access-Control-Allow-Origin": "*"
+  }
+});
 
 /* props and variables */
 let toggle = false;
@@ -13,9 +22,9 @@ function getDateTimeNow() {
   return today.toUTCString(); // "Sat, 13 Jun 2020 18:30:00 GMT" 
 }
 
-function updateMessage(value:string) { 
+function updateMessage(elem:any) { 
   //let message = document.getElementById('messageBox')?.value.trim();
-  message = value.replace(/\r?\n/g, '<br/>');
+  message = elem.value.replace(/\r?\n/g, '<br/>');
   //document.getElementById('messageBox').value = "";
 }
 
@@ -32,6 +41,9 @@ let messages= reactive([{
   message:"Are we still going out on the weekend?<br/>I need to confirm the booking with the restaurant.",
   timestamp:getDateTimeNow()
 }]);
+messages.pop();
+
+// let messages= reactive([]);
 
 onMounted(() => {
   document.getElementById('messageBox')?.addEventListener(
@@ -218,7 +230,7 @@ socket.on('chat message', function(message) {
           </svg>
         </div>
 
-        <textarea :value="message" @input="updateMessage($event.target.value)" type="text" name="messageBox" id="messageBox" placeholder="Type your message" class="h-12 flex-grow focus:outline-none my-1 py-2 px-4 rounded-2xl place-content-center resize-none scrollbar-w-2 scrollbar-thumb-gray-400 scrollbar-track-gray-200"></textarea>
+        <textarea :value="message" @input="updateMessage($event?.target)" type="text" name="messageBox" id="messageBox" placeholder="Type your message" class="h-12 flex-grow focus:outline-none my-1 py-2 px-4 rounded-2xl place-content-center resize-none scrollbar-w-2 scrollbar-thumb-gray-400 scrollbar-track-gray-200"></textarea>
         
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />

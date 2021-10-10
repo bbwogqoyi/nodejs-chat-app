@@ -2,11 +2,13 @@
   "name": "nodejs-chat-app",
   "version": "0.0.0",
   "scripts": {
+    "backend": "nodemon src/api/index.js",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "serve": "vite preview"
   },
   "dependencies": {
+    "@types/socket.io-client": "^3.0.0",
     "express": "^4.17.1",
     "mongoose": "^6.0.7",
     "socket.io": "^4.2.0",
