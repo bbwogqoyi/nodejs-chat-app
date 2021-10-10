@@ -9,11 +9,11 @@ const routes = [
     component: Chat
   },
   {
-    path: '/',
+    path: '/auth',
     name: 'Login',
     component: Login
   },
-  { path: '/login', redirect: '/' }
+  { path: '/', redirect: '/chat' }
 ];
 
 const router = createRouter({
@@ -21,5 +21,10 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes, // short for `routes: routes`
 })
+
+// router.beforeEach((to, from, next) => {
+//   if (to.name !== 'Login' && !isAuthenticated) next({ name: 'Login' })
+//   else next()
+// })
 
 export default router;
